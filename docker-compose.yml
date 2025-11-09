@@ -1,0 +1,240 @@
+services:
+  # PostgreSQL Database
+  db:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_USER: emulator_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secure_password}
+      POSTGRES_DB: emulator_platform
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "28473:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U emulator_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API (Rust)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "37291:8080"
+    environment:
+      DATABASE_URL: postgres://emulator_user:${DB_PASSWORD:-secure_password}@db:5432/emulator_platform
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-this}
+      ROMS_PATH: /roms
+    volumes:
+      - roms_data:/roms:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Frontend (React)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: http://localhost:37291
+    ports:
+      - "41968:3000"
+    depends_on:
+      - backend
+
+  # RetroArch Service (libretro cores - covers most systems)
+  # Note: Commented out - build from source if needed
+  # Uncomment and build when ready to use RetroArch cores
+  # retroarch:
+  #   build:
+  #     context: ./emulators/retroarch
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./roms:/roms:ro
+  #     - ./emulator-service/retroarch.cfg:/config/retroarch.cfg
+  #     - retroarch_saves:/saves
+  #     - retroarch_states:/states
+  #   ports:
+  #     - "8081:8081"
+  #   command: ["retroarch", "--server", "--port", "8081"]
+  #   depends_on:
+  #     - backend
+
+  # EmulatorJS Service (Browser-based WASM emulators)
+  # Note: Commented out - build from source if needed
+  # emulatorjs:
+  #   build:
+  #     context: ./emulators/emulatorjs
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8082:80"
+  #   volumes:
+  #     - ./roms:/data/roms:ro
+  #   depends_on:
+  #     - backend
+
+  # Dolphin (GameCube/Wii) - Native
+  # Note: Commented out - requires additional setup
+  # dolphin:
+  #   build:
+  #     context: ./emulators/dolphin
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./roms:/roms:ro
+  #     - dolphin_saves:/home/dolphin/.dolphin-emu
+  #   ports:
+  #     - "8083:8083"
+  #   depends_on:
+  #     - backend
+  #   environment:
+  #     DISPLAY: :0
+
+  # PCSX2 (PlayStation 2) - Native
+  # Note: Commented out - requires additional setup
+  # pcsx2:
+  #   build:
+  #     context: ./emulators/pcsx2
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./roms:/roms:ro
+  #     - pcsx2_saves:/root/.config/PCSX2
+  #   ports:
+  #     - "8084:8084"
+  #   depends_on:
+  #     - backend
+
+  # RPCS3 (PlayStation 3) - Native
+  # Note: Commented out - requires additional setup
+  # rpcs3:
+  #   build:
+  #     context: ./emulators/rpcs3
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./roms:/roms:ro
+  #     - rpcs3_saves:/root/.config/rpcs3
+  #   ports:
+  #     - "8085:8085"
+  #   depends_on:
+  #     - backend
+  #   environment:
+  #     DISPLAY: :0
+
+  # PPSSPP (PSP) - Native
+  # Note: Commented out - requires additional setup
+  # ppsspp:
+  #   build:
+  #     context: ./emulators/ppsspp
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./roms:/roms:ro
+  #     - ppsspp_saves:/root/.config/ppsspp
+  #   ports:
+  #     - "8086:8086"
+  #   depends_on:
+  #     - backend
+
+  # Citra (Nintendo 3DS) - Native
+  # Note: Commented out - requires additional setup
+  # citra:
+  #   build:
+  #     context: ./emulators/citra
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./roms:/roms:ro
+  #     - citra_saves:/root/.local/share/citra-emu
+  #   ports:
+  #     - "8087:8087"
+  #   depends_on:
+  #     - backend
+
+  # yuzu (Nintendo Switch) - Native
+  # Note: Commented out - requires additional setup
+  # yuzu:
+  #   build:
+  #     context: ./emulators/yuzu
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./roms:/roms:ro
+  #     - yuzu_saves:/root/.local/share/yuzu
+  #   ports:
+  #     - "8088:8088"
+  #   depends_on:
+  #     - backend
+
+  # Ryujinx (Nintendo Switch) - Native
+  # Note: Commented out - requires additional setup
+  # ryujinx:
+  #   build:
+  #     context: ./emulators/ryujinx
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./roms:/roms:ro
+  #     - ryujinx_saves:/root/.config/Ryujinx
+  #   ports:
+  #     - "8089:8089"
+  #   depends_on:
+  #     - backend
+
+  # Flycast (Dreamcast) - Native
+  # Note: Commented out - requires additional setup
+  # flycast:
+  #   build:
+  #     context: ./emulators/flycast
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./roms:/roms:ro
+  #     - flycast_saves:/root/.flycast
+  #   ports:
+  #     - "8090:8090"
+  #   depends_on:
+  #     - backend
+
+  # Vita3K (PlayStation Vita) - Native
+  # Note: Commented out - requires additional setup
+  # vita3k:
+  #   build:
+  #     context: ./emulators/vita3k
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./roms:/roms:ro
+  #     - vita3k_saves:/root/.local/share/Vita3K
+  #   ports:
+  #     - "8091:8091"
+  #   depends_on:
+  #     - backend
+
+  # BizHawk (Multi-system TAS tool) - Native
+  # Note: Commented out - requires additional setup
+  # bizhawk:
+  #   build:
+  #     context: ./emulators/bizhawk
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./roms:/roms:ro
+  #     - bizhawk_saves:/root/.config/BizHawk
+  #   ports:
+  #     - "8092:8092"
+  #   depends_on:
+  #     - backend
+
+volumes:
+  postgres_data:
+  roms_data:
+  retroarch_saves:
+  retroarch_states:
+  dolphin_saves:
+  pcsx2_saves:
+  rpcs3_saves:
+  ppsspp_saves:
+  citra_saves:
+  yuzu_saves:
+  ryujinx_saves:
+  flycast_saves:
+  vita3k_saves:
+  bizhawk_saves:
+

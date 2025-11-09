@@ -1,0 +1,51 @@
+# Rust
+target/
+Cargo.lock
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# React
+build/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ROMs (do not commit ROM files)
+roms/*.nes
+roms/*.snes
+roms/*.n64
+roms/*.gb
+roms/*.gbc
+roms/*.gba
+roms/*.nds
+roms/*.3ds
+roms/*.iso
+roms/*.bin
+roms/*.cue
+roms/*.chd
+roms/*.vpk
+roms/*.pkg
+roms/*.nsp
+roms/*.xci
+roms/*.cdi
+roms/*.gdi
+
+# Docker
+.dockerignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
