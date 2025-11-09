@@ -1,0 +1,80 @@
+.game-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #4CAF50;
+}
+
+.game-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 15px;
+}
+
+.game-card-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+  flex: 1;
+}
+
+.system-badge {
+  background-color: #4CAF50;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.game-card-body {
+  margin-bottom: 15px;
+}
+
+.emulator-name {
+  color: #666;
+  font-size: 14px;
+  margin: 0 0 10px 0;
+}
+
+.github-link {
+  color: #2196F3;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.github-link:hover {
+  text-decoration: underline;
+}
+
+.game-card-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.play-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.play-button:hover {
+  background-color: #45a049;
+}
+
