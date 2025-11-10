@@ -9,13 +9,19 @@ use crate::emulators::{get_emulator_by_id, EmulatorInfo};
 
 #[derive(Serialize, sqlx::FromRow)]
 pub struct Game {
-    pub id: i64,
+    pub id: i32,
     pub title: String,
     pub system: String,
     pub file_path: String,
     pub emulator_id: String,
     pub emulator_type: String,
-    pub added_at: chrono::DateTime<chrono::Utc>,
+    pub added_at: chrono::NaiveDateTime,
+    #[sqlx(default)]
+    pub user_id: Option<i32>,
+    #[sqlx(default)]
+    pub file_size: Option<i64>,
+    #[sqlx(default)]
+    pub metadata: Option<serde_json::Value>,
 }
 
 #[derive(Serialize)]
@@ -55,11 +61,14 @@ pub async fn get_games(
             .fetch_all(pool.as_ref())
             .await
     } else {
-        sqlx::query_as("SELECT * FROM games ORDER BY title")
+        sqlx::query_as("SELECT id, title, system, file_path, emulator_id, emulator_type, added_at, user_id, file_size, metadata FROM games ORDER BY title")
             .fetch_all(pool.as_ref())
             .await
     }
-    .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        axum::http::StatusCode::INTERNAL_SERVER_ERROR
+    })?;
     
     let games_with_emulators: Vec<GameWithEmulator> = games
         .into_iter()
@@ -98,7 +107,7 @@ pub async fn get_games(
 
 pub async fn get_game_by_id(
     Extension(pool): Extension<Arc<PgPool>>,
-    Path(id): Path<i64>,
+    Path(id): Path<i32>,
 ) -> Result<Json<GameWithEmulator>, axum::http::StatusCode> {
     let game: Game = sqlx::query_as("SELECT * FROM games WHERE id = $1")
         .bind(id)

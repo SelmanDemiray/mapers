@@ -31,9 +31,9 @@ RUN npm cache clean --force && \
 # Copy the rest of the application
 COPY . .
 
-# Make start script executable
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
+# Make start script executable and ensure it has Unix line endings
+RUN chmod +x /app/start.sh && \
+    sed -i 's/\r$//' /app/start.sh || true
 
 EXPOSE 3000
 

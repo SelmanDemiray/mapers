@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     libsdl2-ttf-dev \
     libfreetype6-dev \
     libx11-dev \
+    libx11-xcb-dev \
     libxext-dev \
     libxrandr-dev \
     libvulkan-dev \
@@ -38,4 +39,6 @@ RUN mkdir -p /saves /states /config /roms
 
 EXPOSE 8081
 
-CMD ["retroarch", "--server", "--port", "8081"]
+# Run RetroArch with network command interface enabled
+# The network_cmd_port is set in the config file
+CMD ["retroarch", "--config", "/config/retroarch.cfg"]

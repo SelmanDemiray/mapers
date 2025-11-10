@@ -30,7 +30,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-this}
       ROMS_PATH: /roms
     volumes:
-      - roms_data:/roms:ro
+      - ./roms:/roms
     depends_on:
       db:
         condition: service_healthy
@@ -47,36 +47,30 @@ services:
     depends_on:
       - backend
 
-  # RetroArch Service (libretro cores - covers most systems)
-  # Note: Commented out - build from source if needed
-  # Uncomment and build when ready to use RetroArch cores
-  # retroarch:
-  #   build:
-  #     context: ./emulators/retroarch
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./roms:/roms:ro
-  #     - ./emulator-service/retroarch.cfg:/config/retroarch.cfg
-  #     - retroarch_saves:/saves
-  #     - retroarch_states:/states
-  #   ports:
-  #     - "8081:8081"
-  #   command: ["retroarch", "--server", "--port", "8081"]
-  #   depends_on:
-  #     - backend
+  # RetroArch HTTP Bridge Service
+  # This service provides an HTTP interface to RetroArch's network command protocol
+  retroarch-bridge:
+    build:
+      context: ./emulator-service
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - backend
+    # Note: RetroArch itself would need to run separately or be integrated differently
+    # For now, this bridge provides the HTTP endpoint the frontend expects
 
   # EmulatorJS Service (Browser-based WASM emulators)
-  # Note: Commented out - build from source if needed
-  # emulatorjs:
-  #   build:
-  #     context: ./emulators/emulatorjs
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8082:80"
-  #   volumes:
-  #     - ./roms:/data/roms:ro
-  #   depends_on:
-  #     - backend
+  emulatorjs:
+    build:
+      context: ./emulators/emulatorjs
+      dockerfile: Dockerfile
+    ports:
+      - "8082:80"
+    volumes:
+      - ./roms:/data/roms:ro
+    depends_on:
+      - backend
 
   # Dolphin (GameCube/Wii) - Native
   # Note: Commented out - requires additional setup

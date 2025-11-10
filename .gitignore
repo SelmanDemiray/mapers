@@ -35,6 +35,11 @@ roms/*.xci
 roms/*.cdi
 roms/*.gdi
 
+# Ignore all files in roms directory except README files
+roms/**/*
+!roms/**/README.md
+!roms/README.md
+
 # Docker
 .dockerignore
 

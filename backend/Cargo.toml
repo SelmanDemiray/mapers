@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 tokio = { version = "1.35", features = ["full"] }
 axum = "0.7"
+axum-extra = { version = "0.9", features = ["multipart"] }
 sqlx = { version = "0.7", features = ["runtime-tokio-native-tls", "postgres", "chrono"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
@@ -16,4 +17,8 @@ tower = "0.4"
 tower-http = { version = "0.5", features = ["cors"] }
 anyhow = "1.0"
 urlencoding = "2.1"
+walkdir = "2.4"
+regex = "1.10"
+tokio-util = { version = "0.7", features = ["io"] }
+futures = "0.3"
 

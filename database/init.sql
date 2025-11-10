@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS games (
     id SERIAL PRIMARY KEY,
     title VARCHAR(200) NOT NULL,
     system VARCHAR(100) NOT NULL,
-    file_path VARCHAR(500) NOT NULL,
+    file_path VARCHAR(500) NOT NULL UNIQUE,
     emulator_id VARCHAR(50) NOT NULL REFERENCES emulators(id),
     emulator_type VARCHAR(50) NOT NULL,
     added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
