@@ -19,6 +19,7 @@ ENV DISABLE_ESLINT_PLUGIN=true
 ENV GENERATE_SOURCEMAP=false
 ENV TSC_COMPILE_ON_ERROR=true
 ENV TS_NODE_TRANSPILE_ONLY=true
+ENV DANGEROUSLY_DISABLE_HOST_CHECK=true
 
 # Copy package files first for better caching
 COPY package.json ./

@@ -1,4 +1,23 @@
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:37291';
+// Use relative URL when accessed through Cloudflare Tunnel, otherwise use env var or localhost
+const getApiUrl = () => {
+  // If we're accessing through a tunnel (HTTPS) or from a remote host, use relative URL
+  // The React dev server proxy will handle /api requests in development
+  // For production/remote access, Cloudflare Tunnel will route /api to backend
+  if (window.location.protocol === 'https:' || 
+      (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1')) {
+    // Return empty base so callers can use absolute path starting with /api
+    return '';
+  }
+  // For local development, use the configured API URL
+  let base = process.env.REACT_APP_API_URL || 'http://localhost:37291';
+  // Ensure single /api suffix for local absolute base
+  if (!base.endsWith('/api')) {
+    base = `${base.replace(/\/+$/, '')}/api`;
+  }
+  return base;
+};
+
+const API_URL = getApiUrl();
 
 export interface Game {
   id: number;

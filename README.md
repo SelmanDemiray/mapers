@@ -462,6 +462,21 @@ A: Minimum 5GB. More if you have many games:
 
 A: Yes! Replace `localhost` with your computer's IP address. Example: `http://192.168.1.100:41968`
 
+**Q: Can I share this with friends so they can access it from anywhere?**
+
+A: Yes! Use Cloudflare Tunnel (100% free). See [CLOUDFLARE_SETUP.md](CLOUDFLARE_SETUP.md) for setup instructions.
+
+**Quick start:**
+```bash
+# Option 1: Using Docker
+docker-compose --profile cloudflare up cloudflared
+
+# Option 2: Standalone (if cloudflared is installed)
+cloudflared tunnel --url http://localhost:41968
+```
+
+This gives you a shareable URL like `https://yourname.trycloudflare.com` that works from anywhere!
+
 **Q: Which systems require a powerful computer?**
 
 A: 

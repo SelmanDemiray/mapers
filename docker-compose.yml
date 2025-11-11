@@ -72,6 +72,25 @@ services:
     depends_on:
       - backend
 
+  # Cloudflare Tunnel (for global access)
+  # Quick start: docker-compose --profile cloudflare up cloudflared
+  # Or run: cloudflared tunnel --url http://localhost:41968
+  # For permanent setup, see CLOUDFLARE_SETUP.md
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    # Quick tunnel mode - exposes frontend only (backend proxied through React dev server)
+    command: tunnel --no-autoupdate --url http://frontend:3000
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+    profiles:
+      - cloudflare
+    # For permanent tunnel with custom domain, uncomment below:
+    # volumes:
+    #   - ~/.cloudflared:/etc/cloudflared:ro
+    # command: tunnel --config /etc/cloudflared/config.yml run
+
   # Dolphin (GameCube/Wii) - Native
   # Note: Commented out - requires additional setup
   # dolphin:
