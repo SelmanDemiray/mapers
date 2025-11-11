@@ -9,11 +9,10 @@ const getApiUrl = () => {
     return '';
   }
   // For local development, use the configured API URL
+  // Remove /api suffix if present since we add it in each API call
   let base = process.env.REACT_APP_API_URL || 'http://localhost:37291';
-  // Ensure single /api suffix for local absolute base
-  if (!base.endsWith('/api')) {
-    base = `${base.replace(/\/+$/, '')}/api`;
-  }
+  // Remove trailing slashes and /api suffix if present
+  base = base.replace(/\/+$/, '').replace(/\/api$/, '');
   return base;
 };
 
@@ -194,5 +193,107 @@ export async function uploadRom(
     xhr.setRequestHeader('Authorization', `Bearer ${token}`);
     xhr.send(formData);
   });
+}
+
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  success: boolean;
+  message: string;
+  username: string | null;
+  user_id?: number | null;
+}
+
+export interface ConnectedUser {
+  username: string;
+  ip_address: string;
+  last_seen: string;
+}
+
+export interface ConnectedUsersResponse {
+  users: ConnectedUser[];
+}
+
+export async function login(credentials: LoginRequest): Promise<LoginResponse> {
+  const response = await fetch(`${API_URL}/api/auth/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(credentials),
+  });
+  
+  // Try to parse the response even if status is not ok
+  const data = await response.json().catch(() => null);
+  
+  if (!response.ok) {
+    // If we got a response body with a message, use it
+    if (data && data.message) {
+      throw new Error(data.message);
+    }
+    throw new Error(`Failed to login: ${response.status} ${response.statusText}`);
+  }
+  
+  return data as LoginResponse;
+}
+
+export async function registerSession(username: string): Promise<void> {
+  const response = await fetch(`${API_URL}/api/sessions/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ username }),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to register session');
+  }
+}
+
+export async function getConnectedUsers(): Promise<ConnectedUsersResponse> {
+  const response = await fetch(`${API_URL}/api/sessions/connected`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch connected users');
+  }
+  return response.json();
+}
+
+export interface PreviousUsernamesResponse {
+  usernames: string[];
+}
+
+export async function getPreviousUsernames(): Promise<PreviousUsernamesResponse> {
+  const response = await fetch(`${API_URL}/api/auth/previous-usernames`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch previous usernames');
+  }
+  return response.json();
+}
+
+export interface DeleteAccountRequest {
+  username: string;
+  password: string;
+}
+
+export interface DeleteAccountResponse {
+  success: boolean;
+  message: string;
+}
+
+export async function deleteAccount(credentials: DeleteAccountRequest): Promise<DeleteAccountResponse> {
+  const response = await fetch(`${API_URL}/api/auth/delete-account`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(credentials),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to delete account');
+  }
+  return response.json();
 }
 

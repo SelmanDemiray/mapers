@@ -29,6 +29,7 @@ services:
       DATABASE_URL: postgres://emulator_user:${DB_PASSWORD:-secure_password}@db:5432/emulator_platform
       JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-this}
       ROMS_PATH: /roms
+      APP_PASSWORD: ${APP_PASSWORD:-default_password}
     volumes:
       - ./roms:/roms
     depends_on:

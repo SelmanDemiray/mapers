@@ -1039,6 +1039,7 @@ DB_PASSWORD=your_secure_password
 # Backend
 JWT_SECRET=your_jwt_secret_key
 ROMS_PATH=/roms
+APP_PASSWORD=your_app_password_here
 
 # Frontend
 REACT_APP_API_URL=http://localhost:37291
@@ -1048,6 +1049,8 @@ FRONTEND_PORT=41968
 BACKEND_PORT=37291
 DATABASE_PORT=28473
 ```
+
+**Note:** The `APP_PASSWORD` is the password that all users must enter when logging into the application. Set this to a secure password that you'll share with authorized users.
 
 ### I. Compatibility Database
 

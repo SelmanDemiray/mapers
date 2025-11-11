@@ -12,6 +12,7 @@ mod emulators;
 mod games;
 mod rom_scanner;
 mod roms;
+mod sessions;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -98,6 +99,16 @@ async fn main() -> anyhow::Result<()> {
         println!("Initial scan complete: {} added, {} already in database", added, skipped);
     }
     
+    // Start background task to clean up old sessions
+    let pool_cleanup = pool.clone();
+    tokio::spawn(async move {
+        let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(300)); // Every 5 minutes
+        loop {
+            interval.tick().await;
+            sessions::cleanup_old_sessions(pool_cleanup.clone()).await;
+        }
+    });
+    
     let app = Router::new()
         .route("/api/emulators", get(get_emulators))
         .route("/api/games", get(games::get_games).post(games::add_game))
@@ -105,6 +116,11 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/roms/scan", post(roms::scan_roms))
         .route("/api/roms/upload", post(roms::upload_rom))
         .route("/api/roms/consoles", get(roms::get_consoles))
+        .route("/api/auth/login", post(sessions::login))
+        .route("/api/auth/previous-usernames", get(sessions::get_previous_usernames))
+        .route("/api/auth/delete-account", post(sessions::delete_account))
+        .route("/api/sessions/register", post(sessions::register_session))
+        .route("/api/sessions/connected", get(sessions::get_connected_users))
         .layer(Extension(pool))
         .layer(CorsLayer::permissive());
     

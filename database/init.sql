@@ -54,12 +54,23 @@ CREATE TABLE IF NOT EXISTS play_history (
     last_played TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Active sessions table for tracking connected users
+CREATE TABLE IF NOT EXISTS active_sessions (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    ip_address VARCHAR(45) NOT NULL,
+    last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(username, ip_address)
+);
+
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_games_system ON games(system);
 CREATE INDEX IF NOT EXISTS idx_games_user ON games(user_id);
 CREATE INDEX IF NOT EXISTS idx_games_emulator ON games(emulator_id);
 CREATE INDEX IF NOT EXISTS idx_save_states_game_user ON save_states(game_id, user_id);
 CREATE INDEX IF NOT EXISTS idx_play_history_user ON play_history(user_id);
+CREATE INDEX IF NOT EXISTS idx_active_sessions_last_seen ON active_sessions(last_seen);
 
 -- Insert emulator registry data
 INSERT INTO emulators (id, name, system, core, emulator_type, service_port, github_url, license, supported_formats) VALUES
